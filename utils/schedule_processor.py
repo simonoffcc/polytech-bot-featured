@@ -69,7 +69,7 @@ class WeekScheduleElement(BaseModel):
 months_captions = {
     'янв.': 1,
     'фев.': 2,
-    'мар': 3,
+    'мар.': 3,
     'апр.': 4,
     'мая': 5,
     'июн.': 6,

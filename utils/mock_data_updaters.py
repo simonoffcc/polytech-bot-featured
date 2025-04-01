@@ -1,8 +1,8 @@
-import asyncio
-import json
 import os
-from datetime import datetime
+import json
+import asyncio
 import platform
+from datetime import datetime
 
 from bs4 import BeautifulSoup
 from requests import get

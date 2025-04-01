@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 from aiogram import Bot, Dispatcher
 from aiogram.client.default import DefaultBotProperties
 
-from tg_bot.handlers import start, menu, schedule, find_teacher
+from handlers import start, menu, schedule, find_teacher
 
 load_dotenv()
 
@@ -16,5 +16,4 @@ dp.include_routers(
     menu.router,
     schedule.router,
     find_teacher.router
-
 )

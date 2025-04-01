@@ -6,11 +6,10 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
 
 from db_orm.crud import get_user_by_attrs
-from tg_bot.keyboards.main_menu import get_main_menu_kb
 
 from tg_bot.lexicon.messages import lexicon as msgs_lexicon
 from tg_bot.lexicon.buttons import lexicon as btns_lexicon
-from utils.groups_jsoner import find_group_by_name, find_group_by_id
+from utils.groups_jsoner import find_group_by_id
 from utils.schedule_formatter import ScheduleFormatter
 from utils.schedule_processor import get_schedule_by_date
 
@@ -19,7 +18,7 @@ router = Router()
 
 @router.message(Command("schedule"))
 @router.message(F.text == btns_lexicon['main_menu']['schedule'])
-async def cmd_new_work(message: Message, state: FSMContext):
+async def cmd_new_work(message: Message):
     user = get_user_by_attrs(telegram_id=message.from_user.id)
 
     if user and user.is_active:

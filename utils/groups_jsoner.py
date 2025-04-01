@@ -60,5 +60,5 @@ def find_teacher_by_name(teacher_name: str) -> list | None:
 
 
 if __name__ == '__main__':
-    res = find_teacher_by_name("Александр Гончаров")
+    res = find_teacher_by_name("Александр Иванов")
     print(res)

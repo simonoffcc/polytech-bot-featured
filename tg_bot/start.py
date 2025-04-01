@@ -1,8 +1,5 @@
 import asyncio
-import logging
 from os import getenv
-
-from aiogram.types import ReplyKeyboardRemove
 
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from dotenv import load_dotenv

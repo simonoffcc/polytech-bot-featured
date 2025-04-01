@@ -14,8 +14,7 @@ def get_main_menu_kb() -> ReplyKeyboardMarkup:
         KeyboardButton(text=btns_lexicon['main_menu']['schedule'])
     )
     builder.row(
-        KeyboardButton(text=btns_lexicon['main_menu']['buildings']),
-        KeyboardButton(text=btns_lexicon['main_menu']['find_teacher'])
+        KeyboardButton(text=btns_lexicon['main_menu']['find_teacher']),
     )
     builder.row(
         KeyboardButton(
