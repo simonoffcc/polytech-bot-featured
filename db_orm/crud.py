@@ -1,6 +1,8 @@
 from contextlib import contextmanager
+from datetime import date
+from sqlalchemy import desc
 
-from db_orm.models import AcademicBuilding, User, Notification, SavedSchedule
+from db_orm.models import User, PuffinsHistory, AcademicBuilding, Notification, SavedSchedule
 from db_orm.database import Session
 
 
@@ -105,6 +107,57 @@ def get_building_by_attrs(**kwargs) -> AcademicBuilding:
 
         building = query.first()
         return building
+
+# ******************* Пышки *******************
+
+def get_puffins_status(target_date: date = None) -> PuffinsHistory:
+    """
+    Получает статус пышек за указанную дату (по умолчанию - сегодня)
+    :param target_date: дата, за которую нужно получить статус
+    :return: запись из PuffinsHistory
+    """
+    if target_date is None:
+        target_date = date.today()
+        
+    with get_session() as session:
+        return session.query(PuffinsHistory).filter(PuffinsHistory.date == target_date).first()
+
+
+def get_puffins_history(days: int = 14) -> list[PuffinsHistory]:
+    """
+    Получает историю статусов пышек за последние N дней
+    :param days: количество дней для получения истории
+    :return: список записей из PuffinsHistory
+    """
+    with get_session() as session:
+        return session.query(PuffinsHistory).order_by(desc(PuffinsHistory.date)).limit(days).all()
+
+def update_puffins_status(message: str, is_puffins: bool | None, target_date: date = None) -> PuffinsHistory:
+    """
+    Обновляет или создает запись о статусе пышек
+    :param message: текст сообщения
+    :param is_puffins: статус наличия пышек (True/False/None)
+    :param target_date: дата, за которую обновляется статус
+    :return: обновленная или новая запись
+    """
+    if target_date is None:
+        target_date = date.today()
+        
+    with get_session() as session:
+        existing_record = session.query(PuffinsHistory).filter(PuffinsHistory.date == target_date).first()
+        
+        if existing_record:
+            existing_record.message = message
+            existing_record.is_puffins = is_puffins
+            return existing_record
+        else:
+            new_record = PuffinsHistory(
+                date=target_date,
+                message=message,
+                is_puffins=is_puffins
+            )
+            session.add(new_record)
+            return new_record
 
 
 if __name__ == '__main__':

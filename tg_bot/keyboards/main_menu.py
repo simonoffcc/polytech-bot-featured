@@ -4,7 +4,6 @@ from aiogram.types import ReplyKeyboardMarkup, KeyboardButton, WebAppInfo
 from aiogram.utils.keyboard import ReplyKeyboardBuilder
 
 from tg_bot.lexicon.buttons import lexicon as btns_lexicon
-from tg_bot.lexicon.messages import lexicon as msgs_lexicon
 
 
 def get_main_menu_kb() -> ReplyKeyboardMarkup:
@@ -12,6 +11,9 @@ def get_main_menu_kb() -> ReplyKeyboardMarkup:
 
     builder.row(
         KeyboardButton(text=btns_lexicon['main_menu']['schedule'])
+    )
+    builder.row(
+        KeyboardButton(text=btns_lexicon['main_menu']['puffins'])
     )
     builder.row(
         KeyboardButton(text=btns_lexicon['main_menu']['find_teacher']),

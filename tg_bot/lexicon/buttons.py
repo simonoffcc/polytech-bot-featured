@@ -7,6 +7,7 @@ lexicon = {
     'main_menu': {
         'main_menu': f"{emojize(':card_file_box:')} Главное меню",
         'schedule': f"{emojize(':calendar:')} Расписание",
+        'puffins': f"f{emojize(':doughnut:')} Есть ли пышки?",
         'find_teacher': f"{emojize(':teacher:')} Где препод?",
         'settings': f"{emojize(':gear:')} Настройки",
     }

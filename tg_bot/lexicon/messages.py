@@ -8,11 +8,9 @@ lexicon = {
         'ruz_error': f"{emojize(':satellite_antenna:')} Не удаётся получить данные\n\nМы не можем получить данные с сервера расписания, попробуй ещё раз через несколько минут",
         'action_canceled': f"{emojize(':prohibited:')} Действие отменено"
     },
-
     'registration': {
         'ask_to_group': f"{emojize(':waving_hand:')} Привет! Для продолжения отправь номер своей группы\n\n<blockquote>Пример: 5130904/20102</blockquote>"
     },
-
     'group_updater': {
         'group_updated': f"{emojize(':information:')} <b>Данные о группе обновлены!</b>\n\nНовая группа: group_num",
         'group_inserted': f"{emojize(':information:')} <b>Данные о группе сохранены!</b>\n\nНовая группа: group_num\n\nЧтобы открыть меню, отправь или нажми /menu",
@@ -25,5 +23,10 @@ lexicon = {
         'many_teachers': f"{emojize(':information:')} Найдено несколько преподавателей, выбери нужного",
         'too_many_teachers': f"{emojize(':information:')} Найдено слишком много преподавателей, укажи более точное ФИО",
         'teacher_not_found': f"{emojize(':information:')} Преподавателя с таким ФИО не найдено, попробуй ещё раз",
+    },
+    'puffins': {
+        'there_is_puffins': f"{emojize(':doughnut:')} Да, пышки сегодня есть.",
+        'there_is_no_puffins': f"{emojize(':doughnut:')} Нет, пышек сегодня нет.",
+        'no_information': f"{emojize(':information:')} На сегодня нет информации о пышках.",
     }
 }
