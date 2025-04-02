@@ -1,15 +1,16 @@
-from aiogram import Router
+from aiogram import Router, F
 from aiogram.types import Message
 
-from datetime import date
 from db_orm.crud import update_puffins_status
 from db_orm.models import PuffinsHistory
+from utils.notification import notification
 
-CHANNEL_ID = '-1001711842554'
+# CHANNEL_ID = '-1001711842554'
+CHANNEL_ID = '-1002352540706'
 
 router = Router()
 
-@router.channel_post(lambda message: message.chat.type == 'channel' and str(message.chat.id) == CHANNEL_ID)
+@router.channel_post(lambda message: str(message.chat.id) == CHANNEL_ID)
 async def channel_post_handler(channel_post: Message):
     try:
         # Определяем, были ли пышки на основе сообщения
@@ -26,6 +27,9 @@ async def channel_post_handler(channel_post: Message):
             message=channel_post.text,
             is_puffins=is_puffins
         )
+        
+        # Отправляем уведомление администратору
+        await notification(channel_post.bot, f"Получено новое сообщение о пышках: {channel_post.text}")
         
     except Exception as e:
         print(f"Error saving puffins data: {e}")

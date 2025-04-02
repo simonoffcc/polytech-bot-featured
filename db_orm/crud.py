@@ -110,15 +110,12 @@ def get_building_by_attrs(**kwargs) -> AcademicBuilding:
 
 # ******************* Пышки *******************
 
-def get_puffins_status(target_date: date = None) -> PuffinsHistory:
+def get_puffins_status(target_date: date = date.today()) -> PuffinsHistory:
     """
     Получает статус пышек за указанную дату (по умолчанию - сегодня)
     :param target_date: дата, за которую нужно получить статус
     :return: запись из PuffinsHistory
     """
-    if target_date is None:
-        target_date = date.today()
-        
     with get_session() as session:
         return session.query(PuffinsHistory).filter(PuffinsHistory.date == target_date).first()
 
@@ -132,7 +129,7 @@ def get_puffins_history(days: int = 14) -> list[PuffinsHistory]:
     with get_session() as session:
         return session.query(PuffinsHistory).order_by(desc(PuffinsHistory.date)).limit(days).all()
 
-def update_puffins_status(message: str, is_puffins: bool | None, target_date: date = None) -> PuffinsHistory:
+def update_puffins_status(message: str, is_puffins: bool | None, target_date: date = date.today()) -> PuffinsHistory:
     """
     Обновляет или создает запись о статусе пышек
     :param message: текст сообщения
@@ -140,9 +137,6 @@ def update_puffins_status(message: str, is_puffins: bool | None, target_date: da
     :param target_date: дата, за которую обновляется статус
     :return: обновленная или новая запись
     """
-    if target_date is None:
-        target_date = date.today()
-        
     with get_session() as session:
         existing_record = session.query(PuffinsHistory).filter(PuffinsHistory.date == target_date).first()
         
