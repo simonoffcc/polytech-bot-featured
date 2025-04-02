@@ -22,26 +22,25 @@ router = Router()
 async def cmd_new_work(message: Message):
     user = get_user_by_attrs(telegram_id=message.from_user.id)
 
-    if user and user.is_active:
-
-        day_schedule_response = get_schedule_by_date(
-            volume='group',
-            volume_data={
-                'faculty': user.faculty,
-                'group': user.group,
-            },
-            request_date=datetime.now().date()
-        )
-
-        title = f"Группа {find_group_by_id(faculty=user.faculty, group_num=user.group)['name']}"
-        formatted_day_schedule = ScheduleFormatter.format_day_schedule(day_schedule_response, title)
-
-        await message.answer(
-            text=formatted_day_schedule,
-            reply_markup=get_main_menu_kb()
-        )
-
-    else:
+    if not user or not user.is_active:
         await message.answer(
             text=msgs_lexicon['service']['command_not_allowed']
         )
+        return
+
+    day_schedule_response = get_schedule_by_date(
+        volume='group',
+        volume_data={
+            'faculty': user.faculty,
+            'group': user.group,
+        },
+        request_date=datetime.now().date()
+    )
+
+    title = f"Группа {find_group_by_id(faculty=user.faculty, group_num=user.group)['name']}"
+    formatted_day_schedule = ScheduleFormatter.format_day_schedule(day_schedule_response, title)
+
+    await message.answer(
+        text=formatted_day_schedule,
+        reply_markup=get_main_menu_kb()
+    )

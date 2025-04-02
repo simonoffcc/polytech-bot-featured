@@ -25,13 +25,8 @@ router = Router()
 async def cmd_start(message: Message, state: FSMContext):
     user = get_user_by_attrs(telegram_id=message.from_user.id)
 
-    if user:
-        if user.is_active:
-            await cmd_menu(message, state)
-        else:
-            # todo: восстановление аккаунта или регистрация заново
-            # удалил аккаунт, но данные о нём ещё есть
-            pass
+    if user and user.is_active:
+        await cmd_menu(message, state)
     else:
         # новый пользователь
         await message.answer(

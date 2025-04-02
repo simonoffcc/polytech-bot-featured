@@ -25,19 +25,19 @@ router = Router()
 async def cmd_find_teacher(message: Message, state: FSMContext):
     user = get_user_by_attrs(telegram_id=message.from_user.id)
 
-    if user and user.is_active:
-        await message.answer(
-            text=msgs_lexicon['find_teacher']['first_message'],
-            reply_markup=get_cancel_action_kb()
-        )
-
-        await state.set_state(InputTeacherName.waiting_for_msg)
-
-    else:
+    if not user or not user.is_active:
         await message.answer(
             text=msgs_lexicon['service']['command_not_allowed']
         )
+        return
 
+
+    await message.answer(
+        text=msgs_lexicon['find_teacher']['first_message'],
+        reply_markup=get_cancel_action_kb()
+    )
+
+    await state.set_state(InputTeacherName.waiting_for_msg)
 
 @router.message(InputTeacherName.waiting_for_msg)
 async def find_teacher_by_user_input(message: Message, state: FSMContext):
