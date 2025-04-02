@@ -28,5 +28,8 @@ lexicon = {
         'there_is_puffins': f"{emojize(':doughnut:')} Да, пышки сегодня есть.",
         'there_is_no_puffins': f"{emojize(':doughnut:')} Нет, пышек сегодня нет.",
         'no_information': f"{emojize(':information:')} На сегодня нет информации о пышках.",
+    },
+    'about': {
+        'info': f"{emojize(':information:')} Polytechnic class schedule chatbot with unique features.",
     }
 }

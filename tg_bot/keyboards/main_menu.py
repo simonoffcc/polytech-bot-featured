@@ -24,5 +24,8 @@ def get_main_menu_kb() -> ReplyKeyboardMarkup:
             )
         )
     )
+    builder.row(
+        KeyboardButton(text=btns_lexicon['main_menu']['about'])
+    )
 
     return builder.as_markup(resize_keyboard=True)
