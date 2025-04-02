@@ -13,7 +13,6 @@ async def on_startup():
     # задачи обновления mock-данных
     scheduler = AsyncIOScheduler()
     scheduler.add_job(update_groups_data, 'cron', hour=4, minute=5)
-    scheduler.add_job(update_teachers_data, 'cron', hour=4, minute=10)
     scheduler.start()
 
     # перемещение env переменных в dist

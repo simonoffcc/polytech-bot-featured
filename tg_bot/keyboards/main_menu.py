@@ -16,9 +16,6 @@ def get_main_menu_kb() -> ReplyKeyboardMarkup:
         KeyboardButton(text=btns_lexicon['main_menu']['puffins'])
     )
     builder.row(
-        KeyboardButton(text=btns_lexicon['main_menu']['find_teacher']),
-    )
-    builder.row(
         KeyboardButton(
             text=btns_lexicon['main_menu']['settings'],
             web_app=WebAppInfo(

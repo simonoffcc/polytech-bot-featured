@@ -5,14 +5,6 @@ from sqlalchemy.orm import relationship
 Base = declarative_base()
 
 
-class AcademicBuilding(Base):
-    __tablename__ = 'academic_buildings'
-
-    id = Column(Integer, primary_key=True, comment='id корпуса')
-    building_nm = Column(Text, nullable=False, comment='Название корпуса')
-    building_map_id = Column(Text, nullable=False, comment='id корпуса на карте')
-
-
 class User(Base):
     __tablename__ = 'users'
 
@@ -46,6 +38,7 @@ class SavedSchedule(Base):
     saved_schedules_data = Column(JSON, nullable=False, comment='JSON с информацией о расписаниях')
 
     user = relationship('User', back_populates='saved_schedules')
+
 
 class PuffinsHistory(Base):
     __tablename__ = 'puffins_history'

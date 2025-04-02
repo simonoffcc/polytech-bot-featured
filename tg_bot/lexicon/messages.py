@@ -4,7 +4,7 @@ from tg_bot.lexicon.buttons import lexicon as btns_lexicon
 lexicon = {
     'service': {
         'command_not_allowed': f"{emojize(':information:')} Данная команда недоступна, отправь или нажми /start",
-        'reboot_ok': f"{emojize(':information:')} Система успешно перезагружена",
+        'reboot_ok': f"Система успешно перезагружена",
         'ruz_error': f"{emojize(':satellite_antenna:')} Не удаётся получить данные\n\nМы не можем получить данные с сервера расписания, попробуй ещё раз через несколько минут",
         'action_canceled': f"{emojize(':prohibited:')} Действие отменено"
     },

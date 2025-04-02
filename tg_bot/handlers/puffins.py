@@ -13,7 +13,7 @@ router = Router()
 
 
 @router.message(Command("puffins"))
-@router.message(F.text == btns_lexicon['main_menu']['schedule'])
+@router.message(F.text == btns_lexicon['main_menu']['puffins'])
 async def cmd_puffins(message: Message):
     user = get_user_by_attrs(telegram_id=message.from_user.id)
 
@@ -27,7 +27,8 @@ async def cmd_puffins(message: Message):
     
     if status is None:
         await message.answer(
-            text=msgs_lexicon['puffins']['no_information']
+            text=msgs_lexicon['puffins']['no_information'],
+            reply_markup=get_main_menu_kb()
         )
     else:
         await message.answer(

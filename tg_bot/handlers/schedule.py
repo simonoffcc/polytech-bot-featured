@@ -12,6 +12,7 @@ from tg_bot.lexicon.buttons import lexicon as btns_lexicon
 from utils.groups_jsoner import find_group_by_id
 from utils.schedule_formatter import ScheduleFormatter
 from utils.schedule_processor import get_schedule_by_date
+from tg_bot.keyboards.main_menu import get_main_menu_kb
 
 router = Router()
 
@@ -36,14 +37,8 @@ async def cmd_new_work(message: Message):
         formatted_day_schedule = ScheduleFormatter.format_day_schedule(day_schedule_response, title)
 
         await message.answer(
-            text=btns_lexicon['main_menu']['schedule'],
-            # todo: Reply Keyboard для расписания
-            reply_markup=None
-        )
-
-        # todo: Inline Keyboard для сообщения с расписанием
-        await message.answer(
             text=formatted_day_schedule,
+            reply_markup=get_main_menu_kb()
         )
 
     else:

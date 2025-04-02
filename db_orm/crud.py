@@ -2,7 +2,7 @@ from contextlib import contextmanager
 from datetime import date
 from sqlalchemy import desc
 
-from db_orm.models import User, PuffinsHistory, AcademicBuilding, Notification, SavedSchedule
+from db_orm.models import User, PuffinsHistory
 from db_orm.database import Session
 
 
@@ -91,22 +91,6 @@ def remove_user(user_id: int) -> User:
         session.commit()
 
         return user
-
-
-def get_building_by_attrs(**kwargs) -> AcademicBuilding:
-    """
-    Находит все корпуса по заданным значениям
-    :param kwargs: id | building_nm | building_map_id
-    :return:
-    """
-    with get_session() as session:
-        query = session.query(AcademicBuilding)
-
-        for key, value in kwargs.items():
-            query = query.filter(getattr(AcademicBuilding, key) == value)
-
-        building = query.first()
-        return building
 
 # ******************* Пышки *******************
 

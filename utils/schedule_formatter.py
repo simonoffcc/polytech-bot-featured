@@ -4,7 +4,6 @@ import emoji
 
 import datetime
 
-from db_orm.crud import get_building_by_attrs
 from tg_bot.lexicon.messages import lexicon as msgs_lexicon
 from tg_bot.lexicon.buttons import lexicon as btns_lexicon
 from utils.schedule_processor import DayScheduleElement, ScheduleElement, ScheduleElementTiming
