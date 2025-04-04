@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 from aiogram import Bot, Dispatcher
 from aiogram.client.default import DefaultBotProperties
 
-from handlers import (start, menu, about, schedule, puffins)
+from handlers import (start, menu, about, schedule, puffins, unknown_msg)
 from puffins import service as puffins_service
 
 load_dotenv()
@@ -19,4 +19,5 @@ dp.include_routers(
     schedule.router,
     puffins.router,
     puffins_service.router,
+    unknown_msg.router,
 )

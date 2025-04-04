@@ -16,7 +16,6 @@ from tg_bot.keyboards.main_menu import get_main_menu_kb
 
 router = Router()
 
-
 @router.message(Command("schedule"))
 @router.message(F.text == btns_lexicon['main_menu']['schedule'])
 async def cmd_new_work(message: Message):

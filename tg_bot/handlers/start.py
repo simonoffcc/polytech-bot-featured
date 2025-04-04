@@ -26,7 +26,7 @@ async def cmd_start(message: Message, state: FSMContext):
     user = get_user_by_attrs(telegram_id=message.from_user.id)
 
     if user and user.is_active:
-        await cmd_menu(message, state)
+        await cmd_menu(message)
     else:
         # новый пользователь
         await message.answer(

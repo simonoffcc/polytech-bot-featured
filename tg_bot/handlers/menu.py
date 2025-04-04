@@ -10,7 +10,6 @@ from tg_bot.lexicon.buttons import lexicon as btns_lexicon
 
 router = Router()
 
-
 @router.message(Command("menu"))
 async def cmd_menu(message: Message):
     user = get_user_by_attrs(telegram_id=message.from_user.id)
