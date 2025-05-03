@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Polytech Bot Info</title>
+    <title>Polytech Puffins Stats</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
@@ -28,24 +29,40 @@
             font-weight: bold;
             margin-bottom: 20px;
             color: var(--tg-theme-text-color, #000);
+            text-align: center;
         }
-        .info-row {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 10px;
-            padding: 10px;
-            background: var(--tg-theme-bg-color, #fff);
+        .chart-container {
+            position: relative;
+            height: 300px;
+            width: 100%;
+        }
+        .today-status {
+            text-align: center;
+            font-size: 1.2em;
+            margin: 20px 0;
+            padding: 15px;
             border-radius: 8px;
+            background: var(--tg-theme-bg-color, #fff);
         }
-        .label {
-            font-weight: 500;
-            color: var(--tg-theme-hint-color, #999);
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 20px;
+            text-align: center;
         }
-        .value {
+        .stat-item {
+            background: var(--tg-theme-bg-color, #fff);
+            padding: 10px;
+            border-radius: 8px;
+            flex: 1;
+            margin: 0 5px;
+        }
+        .stat-value {
+            font-size: 1.5em;
+            font-weight: bold;
             color: var(--tg-theme-text-color, #000);
         }
-        #themeInfo {
-            margin-top: 20px;
+        .stat-label {
             font-size: 0.9em;
             color: var(--tg-theme-hint-color, #999);
         }
@@ -53,31 +70,36 @@
 </head>
 <body>
     <div class="container">
-        <div class="header">Информация</div>
+        <div class="header">Статистика пышек 🍩</div>
         
         <div class="card">
-            <div class="info-row">
-                <span class="label">Telegram ID:</span>
-                <span class="value" id="tgId">-</span>
-            </div>
-            <div class="info-row">
-                <span class="label">Имя:</span>
-                <span class="value" id="name">-</span>
-            </div>
-            <div class="info-row">
-                <span class="label">Группа:</span>
-                <span class="value" id="group">-</span>
+            <div class="today-status" id="todayStatus">
+                Загрузка статуса...
             </div>
         </div>
 
         <div class="card">
-            <div class="info-row">
-                <span class="label">Тема Telegram:</span>
-                <span class="value" id="colorScheme">-</span>
+            <div class="chart-container">
+                <canvas id="puffinsChart"></canvas>
             </div>
         </div>
 
-        <div id="themeInfo"></div>
+        <div class="card">
+            <div class="stats">
+                <div class="stat-item">
+                    <div class="stat-value" id="totalDays">-</div>
+                    <div class="stat-label">Дней</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="puffinsDays">-</div>
+                    <div class="stat-label">Дней с пышками</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="percentage">-</div>
+                    <div class="stat-label">% наличия</div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -85,29 +107,101 @@
         tg.expand();
         tg.ready();
 
-        // Получаем базовую информацию из Telegram WebApp
-        document.getElementById('tgId').textContent = tg.initDataUnsafe.user.id || 'Не доступно';
-        document.getElementById('name').textContent = tg.initDataUnsafe.user.first_name || 'Не доступно';
-        document.getElementById('colorScheme').textContent = tg.colorScheme;
+        // Демо-данные (замените на реальные данные из API)
+        const demoData = [
+            { date: '2024-01-01', is_puffins: true },
+            { date: '2024-01-02', is_puffins: true },
+            { date: '2024-01-03', is_puffins: false },
+            { date: '2024-01-04', is_puffins: true },
+            { date: '2024-01-05', is_puffins: false },
+            { date: '2024-01-06', is_puffins: null },
+            { date: '2024-01-07', is_puffins: true },
+            { date: '2024-01-08', is_puffins: true },
+            { date: '2024-01-09', is_puffins: false },
+            { date: '2024-01-10', is_puffins: true },
+            { date: '2024-01-11', is_puffins: true },
+            { date: '2024-01-12', is_puffins: false },
+            { date: '2024-01-13', is_puffins: true },
+            { date: '2024-01-14', is_puffins: true },
+        ];
 
-        // Отображаем информацию о цветовой схеме
-        let themeInfo = document.getElementById('themeInfo');
-        themeInfo.innerHTML = `
-            Цветовая схема: ${tg.colorScheme}<br>
-            Основной цвет: ${tg.themeParams.bg_color}<br>
-            Цвет текста: ${tg.themeParams.text_color}
-        `;
+        // Функция для форматирования даты
+        function formatDate(dateStr) {
+            const date = new Date(dateStr);
+            return date.toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit' });
+        }
 
-        // Запрос к API бота для получения информации о группе
-        // Здесь нужно будет добавить реальный API endpoint
-        // fetch('YOUR_API_ENDPOINT')
+        // Создаем график
+        const ctx = document.getElementById('puffinsChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: demoData.map(item => formatDate(item.date)),
+                datasets: [{
+                    label: 'Наличие пышек',
+                    data: demoData.map(item => item.is_puffins === null ? 0 : item.is_puffins ? 1 : -1),
+                    backgroundColor: demoData.map(item => 
+                        item.is_puffins === null ? '#999999' : 
+                        item.is_puffins ? '#4CAF50' : '#F44336'
+                    ),
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) {
+                                if (value === 1) return 'Есть';
+                                if (value === 0) return 'Нет данных';
+                                if (value === -1) return 'Нет';
+                                return '';
+                            }
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                }
+            }
+        });
+
+        // Обновляем статистику
+        const totalDays = demoData.length;
+        const puffinsDays = demoData.filter(item => item.is_puffins === true).length;
+        const percentage = Math.round((puffinsDays / totalDays) * 100);
+
+        document.getElementById('totalDays').textContent = totalDays;
+        document.getElementById('puffinsDays').textContent = puffinsDays;
+        document.getElementById('percentage').textContent = percentage + '%';
+
+        // Обновляем статус на сегодня
+        const todayData = demoData[demoData.length - 1];
+        const todayStatus = document.getElementById('todayStatus');
+        if (todayData.is_puffins === null) {
+            todayStatus.textContent = 'Сегодня: нет информации о пышках';
+            todayStatus.style.backgroundColor = '#E0E0E0';
+        } else if (todayData.is_puffins) {
+            todayStatus.textContent = 'Сегодня: пышки есть! 🎉';
+            todayStatus.style.backgroundColor = '#A5D6A7';
+        } else {
+            todayStatus.textContent = 'Сегодня: пышек нет 😢';
+            todayStatus.style.backgroundColor = '#EF9A9A';
+        }
+
+        // В будущем здесь будет запрос к API
+        // fetch('YOUR_API_ENDPOINT/puffins/history')
         //     .then(response => response.json())
         //     .then(data => {
-        //         document.getElementById('group').textContent = data.group;
+        //         // Обновление графика и статистики
         //     })
         //     .catch(error => {
         //         console.error('Error:', error);
-        //         document.getElementById('group').textContent = 'Ошибка загрузки';
         //     });
     </script>
 </body>
