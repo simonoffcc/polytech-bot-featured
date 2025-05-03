@@ -66,6 +66,14 @@
             font-size: 0.9em;
             color: var(--tg-theme-hint-color, #999);
         }
+        .error-message {
+            color: #F44336;
+            text-align: center;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 8px;
+            background: rgba(244, 67, 54, 0.1);
+        }
     </style>
 </head>
 <body>
@@ -107,23 +115,14 @@
         tg.expand();
         tg.ready();
 
-        // Демо-данные (замените на реальные данные из API)
-        const demoData = [
-            { date: '2024-01-01', is_puffins: true },
-            { date: '2024-01-02', is_puffins: true },
-            { date: '2024-01-03', is_puffins: false },
-            { date: '2024-01-04', is_puffins: true },
-            { date: '2024-01-05', is_puffins: false },
-            { date: '2024-01-06', is_puffins: null },
-            { date: '2024-01-07', is_puffins: true },
-            { date: '2024-01-08', is_puffins: true },
-            { date: '2024-01-09', is_puffins: false },
-            { date: '2024-01-10', is_puffins: true },
-            { date: '2024-01-11', is_puffins: true },
-            { date: '2024-01-12', is_puffins: false },
-            { date: '2024-01-13', is_puffins: true },
-            { date: '2024-01-14', is_puffins: true },
-        ];
+        let chart = null;
+
+        // API endpoints - используем относительные пути
+        const API_BASE_URL = window.location.hostname === 'localhost' 
+            ? 'http://localhost:8000/api'
+            : '/api';  // Будет использовать тот же домен, где хостится сайт
+        const HISTORY_ENDPOINT = `${API_BASE_URL}/puffins/history`;
+        const TODAY_ENDPOINT = `${API_BASE_URL}/puffins/today`;
 
         // Функция для форматирования даты
         function formatDate(dateStr) {
@@ -131,78 +130,122 @@
             return date.toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit' });
         }
 
-        // Создаем график
-        const ctx = document.getElementById('puffinsChart').getContext('2d');
-        new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: demoData.map(item => formatDate(item.date)),
-                datasets: [{
-                    label: 'Наличие пышек',
-                    data: demoData.map(item => item.is_puffins === null ? 0 : item.is_puffins ? 1 : -1),
-                    backgroundColor: demoData.map(item => 
-                        item.is_puffins === null ? '#999999' : 
-                        item.is_puffins ? '#4CAF50' : '#F44336'
-                    ),
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        ticks: {
-                            callback: function(value) {
-                                if (value === 1) return 'Есть';
-                                if (value === 0) return 'Нет данных';
-                                if (value === -1) return 'Нет';
-                                return '';
+        // Функция для обновления графика
+        function updateChart(data) {
+            const ctx = document.getElementById('puffinsChart').getContext('2d');
+            
+            if (chart) {
+                chart.destroy();
+            }
+
+            chart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: data.map(item => formatDate(item.date)),
+                    datasets: [{
+                        label: 'Наличие пышек',
+                        data: data.map(item => item.is_puffins === null ? 0 : item.is_puffins ? 1 : -1),
+                        backgroundColor: data.map(item => 
+                            item.is_puffins === null ? '#999999' : 
+                            item.is_puffins ? '#4CAF50' : '#F44336'
+                        ),
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    if (value === 1) return 'Есть';
+                                    if (value === 0) return 'Нет данных';
+                                    if (value === -1) return 'Нет';
+                                    return '';
+                                }
                             }
                         }
-                    }
-                },
-                plugins: {
-                    legend: {
-                        display: false
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
                     }
                 }
-            }
-        });
-
-        // Обновляем статистику
-        const totalDays = demoData.length;
-        const puffinsDays = demoData.filter(item => item.is_puffins === true).length;
-        const percentage = Math.round((puffinsDays / totalDays) * 100);
-
-        document.getElementById('totalDays').textContent = totalDays;
-        document.getElementById('puffinsDays').textContent = puffinsDays;
-        document.getElementById('percentage').textContent = percentage + '%';
-
-        // Обновляем статус на сегодня
-        const todayData = demoData[demoData.length - 1];
-        const todayStatus = document.getElementById('todayStatus');
-        if (todayData.is_puffins === null) {
-            todayStatus.textContent = 'Сегодня: нет информации о пышках';
-            todayStatus.style.backgroundColor = '#E0E0E0';
-        } else if (todayData.is_puffins) {
-            todayStatus.textContent = 'Сегодня: пышки есть! 🎉';
-            todayStatus.style.backgroundColor = '#A5D6A7';
-        } else {
-            todayStatus.textContent = 'Сегодня: пышек нет 😢';
-            todayStatus.style.backgroundColor = '#EF9A9A';
+            });
         }
 
-        // В будущем здесь будет запрос к API
-        // fetch('YOUR_API_ENDPOINT/puffins/history')
-        //     .then(response => response.json())
-        //     .then(data => {
-        //         // Обновление графика и статистики
-        //     })
-        //     .catch(error => {
-        //         console.error('Error:', error);
-        //     });
+        // Функция для обновления статистики
+        function updateStats(data) {
+            const totalDays = data.length;
+            const puffinsDays = data.filter(item => item.is_puffins === true).length;
+            const percentage = Math.round((puffinsDays / totalDays) * 100);
+
+            document.getElementById('totalDays').textContent = totalDays;
+            document.getElementById('puffinsDays').textContent = puffinsDays;
+            document.getElementById('percentage').textContent = percentage + '%';
+        }
+
+        // Функция для обновления статуса на сегодня
+        function updateTodayStatus(todayData) {
+            const todayStatus = document.getElementById('todayStatus');
+            
+            if (todayData.is_puffins === null) {
+                todayStatus.textContent = 'Сегодня: нет информации о пышках';
+                todayStatus.style.backgroundColor = '#E0E0E0';
+            } else if (todayData.is_puffins) {
+                todayStatus.textContent = 'Сегодня: пышки есть! 🎉';
+                todayStatus.style.backgroundColor = '#A5D6A7';
+            } else {
+                todayStatus.textContent = 'Сегодня: пышек нет 😢';
+                todayStatus.style.backgroundColor = '#EF9A9A';
+            }
+            
+            if (todayData.message) {
+                todayStatus.title = todayData.message;
+            }
+        }
+
+        // Функция для обработки ошибок
+        function handleError(error) {
+            console.error('Error:', error);
+            const container = document.querySelector('.container');
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'error-message';
+            errorDiv.textContent = 'Произошла ошибка при загрузке данных. Пожалуйста, попробуйте позже.';
+            container.insertBefore(errorDiv, container.firstChild);
+        }
+
+        // Загрузка данных
+        async function loadData() {
+            try {
+                const [historyResponse, todayResponse] = await Promise.all([
+                    fetch(HISTORY_ENDPOINT),
+                    fetch(TODAY_ENDPOINT)
+                ]);
+
+                if (!historyResponse.ok || !todayResponse.ok) {
+                    throw new Error('Network response was not ok');
+                }
+
+                const historyData = await historyResponse.json();
+                const todayData = await todayResponse.json();
+
+                updateChart(historyData);
+                updateStats(historyData);
+                updateTodayStatus(todayData);
+
+                // Обновляем данные каждые 5 минут
+                setTimeout(loadData, 5 * 60 * 1000);
+            } catch (error) {
+                handleError(error);
+            }
+        }
+
+        // Запускаем загрузку данных
+        loadData();
     </script>
 </body>
 </html> 
