@@ -16,8 +16,8 @@ from tg_bot.keyboards.main_menu import get_main_menu_kb
 
 router = Router()
 
-@router.message(Command("schedule"))
-@router.message(F.text == btns_lexicon['main_menu']['schedule'])
+@router.message(Command("today_schedule"))
+@router.message(F.text == btns_lexicon['main_menu']['today_schedule'])
 async def cmd_schedule(message: Message):
     user = get_user_by_attrs(telegram_id=message.from_user.id)
 
@@ -44,7 +44,7 @@ async def cmd_schedule(message: Message):
         reply_markup=get_main_menu_kb()
     )
 
-@router.message(Command("week"))
+@router.message(Command("week_schedule"))
 @router.message(F.text == btns_lexicon['main_menu']['week_schedule'])
 async def cmd_week_schedule(message: Message):
     user = get_user_by_attrs(telegram_id=message.from_user.id)

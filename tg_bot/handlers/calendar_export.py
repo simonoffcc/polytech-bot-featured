@@ -1,6 +1,6 @@
 from os import getenv
 from dotenv import load_dotenv
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from aiogram import Router, F
 from aiogram.types import Message, CallbackQuery, FSInputFile
@@ -10,7 +10,7 @@ from aiogram.fsm.state import State, StatesGroup
 
 from utils.email_sender import EmailSender
 from tg_bot.keyboards.calendar_kb import get_calendar_export_kb
-from utils.schedule_processor import get_schedule_by_date, fetch_week_schedule
+from utils.schedule_processor import get_schedule_by_date, fetch_week_schedule, WeekScheduleElement
 from utils.schedule_formatter import ScheduleFormatter
 from utils.calendar_links import create_calendar_links_message
 from utils.ics_generator import create_ics_calendar, cleanup_ics_file
@@ -32,9 +32,9 @@ email_sender = EmailSender(
     password=getenv('SMTP_PASSWORD')
 )
 
-@router.message(Command("export_calendar"))
-@router.message(F.text == btns_lexicon['main_menu']['export_calendar'])
-async def cmd_export_calendar(message: Message, state: FSMContext):
+@router.message(Command("export_today"))
+@router.message(F.text == btns_lexicon['main_menu']['export_today'])
+async def cmd_export_today(message: Message, state: FSMContext):
     # Получаем информацию о пользователе
     user = get_user_by_attrs(telegram_id=message.from_user.id)
     if not user or not user.is_active:
@@ -101,8 +101,8 @@ async def cmd_export_week_calendar(message: Message, state: FSMContext):
         )
         return
 
-    # Получаем расписание на неделю
-    week_schedule_response = fetch_week_schedule(
+    # Получаем расписание на текущую неделю
+    current_week_response = fetch_week_schedule(
         volume='group',
         volume_data={
             'faculty': user.faculty,
@@ -111,19 +111,39 @@ async def cmd_export_week_calendar(message: Message, state: FSMContext):
         request_date=datetime.now().date()
     )
 
-    if not week_schedule_response or not any(day.lessons for day in week_schedule_response.days):
-        await message.answer("На эту неделю расписания нет.")
+    # Получаем расписание на следующую неделю
+    next_week_date = datetime.now().date() + timedelta(days=7)
+    next_week_response = fetch_week_schedule(
+        volume='group',
+        volume_data={
+            'faculty': user.faculty,
+            'group': user.group,
+        },
+        request_date=next_week_date
+    )
+
+    # Проверяем наличие расписания
+    if (not current_week_response or not any(day.lessons for day in current_week_response.days)) and \
+       (not next_week_response or not any(day.lessons for day in next_week_response.days)):
+        await message.answer("На ближайшие две недели расписания нет.")
         return
+
+    # Объединяем расписания двух недель
+    if current_week_response and next_week_response:
+        current_week_response.days.extend(next_week_response.days)
+        # Обновляем даты начала и конца для объединенного расписания
+        if current_week_response.timing and next_week_response.timing:
+            current_week_response.timing.end_date = next_week_response.timing.end_date
 
     # Форматируем название группы
     title = f"Группа {find_group_by_id(faculty=user.faculty, group_num=user.group)['name']}"
 
     try:
         # Создаем ICS файл
-        calendar_data = create_ics_calendar(week_schedule_response, title)
+        calendar_data = create_ics_calendar(current_week_response, title)
         
         # Сохраняем ICS файл временно
-        filename = f"schedule_week_{datetime.now().strftime('%Y%m%d')}.ics"
+        filename = f"schedule_2weeks_{datetime.now().strftime('%Y%m%d')}.ics"
         with open(filename, 'wb') as f:
             f.write(calendar_data)
         
@@ -132,7 +152,7 @@ async def cmd_export_week_calendar(message: Message, state: FSMContext):
         await message.answer_document(
             document=calendar_file,
             caption=(
-                "Вот ваше расписание на неделю в формате ICS!\n"
+                "Вот ваше расписание на две недели в формате ICS!\n"
                 "Вы можете открыть этот файл в любом календарном приложении "
                 "(Google Calendar, Apple Calendar, Outlook и др.)"
             )

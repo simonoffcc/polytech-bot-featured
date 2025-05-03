@@ -6,14 +6,14 @@ lexicon = {
     },
     'main_menu': {
         'main_menu': f"{emojize(':card_file_box:')} Главное меню",
-        'schedule': f"{emojize(':calendar:')} Расписание на сегодня",
+        'today_schedule': f"{emojize(':calendar:')} Расписание на сегодня",
         'week_schedule': f"{emojize(':calendar:')} Расписание на неделю",
-        'export_calendar': f"{emojize(':inbox_tray:')} Экспорт на сегодня",
+        'export_today': f"{emojize(':inbox_tray:')} Экспорт на сегодня",
         'export_week': f"{emojize(':inbox_tray:')} Экспорт на неделю",
         'puffins': f"{emojize(':doughnut:')} Есть ли пышки?",
         'about': f"{emojize(':information:')} О боте",
         'find_teacher': f"{emojize(':teacher:')} Где препод?",
         'buildings': f"{emojize(':school:')} Корпуса",
-        'settings': f"{emojize(':information_source:')} Информация",
+        'webapp': f"📲 Вебапп",
     }
 }
