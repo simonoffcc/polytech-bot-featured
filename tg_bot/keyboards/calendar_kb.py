@@ -5,6 +5,12 @@ def get_calendar_export_kb() -> InlineKeyboardMarkup:
     keyboard = [
         [
             InlineKeyboardButton(
+                text="📧 Отправить на email",
+                callback_data="send_email"
+            )
+        ],
+        [
+            InlineKeyboardButton(
                 text="❌ Отмена",
                 callback_data="cancel_export"
             )

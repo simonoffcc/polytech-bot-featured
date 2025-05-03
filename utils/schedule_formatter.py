@@ -6,7 +6,7 @@ import datetime
 
 from tg_bot.lexicon.messages import lexicon as msgs_lexicon
 from tg_bot.lexicon.buttons import lexicon as btns_lexicon
-from utils.schedule_processor import DayScheduleElement, ScheduleElement, ScheduleElementTiming
+from utils.schedule_processor import DayScheduleElement, ScheduleElement, ScheduleElementTiming, WeekScheduleElement
 
 import locale
 
@@ -24,6 +24,41 @@ except locale.Error:
 
 class ScheduleFormatter:
     """Форматирует расписание для вывода в Telegram или текстовом виде."""
+
+    @staticmethod
+    def format_week_schedule(week_schedule: WeekScheduleElement, title: str) -> str:
+        """
+        Форматирует расписание на неделю в читаемый текст.
+
+        :param title: Название группы / имя преподавателя
+        :param week_schedule: Объект расписания на неделю.
+        :return: Отформатированное расписание.
+        """
+        if not week_schedule or not week_schedule.days:
+            return "На эту неделю расписания нет"
+
+        # Заголовок с датами недели
+        week_title = (f"{emoji.emojize(':calendar:')} Расписание на неделю\n"
+                     f"({week_schedule.timing.start_date.strftime('%d.%m.%y')} - "
+                     f"{week_schedule.timing.end_date.strftime('%d.%m.%y')})\n"
+                     f"{title}\n")
+
+        formatted_days = []
+        for day in week_schedule.days:
+            # Заголовок дня
+            day_header = f"\n{emoji.emojize(':calendar:')} <b>{day.timing.start_date.strftime('%A').upper()}</b>\n{day.timing.start_date.strftime('%d.%m.%y')}"
+            
+            if not day.lessons:
+                formatted_days.append(f"{day_header}\nЗанятий нет")
+                continue
+
+            formatted_lessons = []
+            for lesson in day.lessons:
+                formatted_lessons.append(ScheduleFormatter.format_lesson(lesson))
+
+            formatted_days.append(f"{day_header}\n\n" + "\n\n".join(formatted_lessons))
+
+        return week_title + "\n".join(formatted_days)
 
     @staticmethod
     def format_day_schedule(day_schedule: DayScheduleElement, title: str) -> str:

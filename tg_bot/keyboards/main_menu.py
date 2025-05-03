@@ -10,7 +10,12 @@ def get_main_menu_kb() -> ReplyKeyboardMarkup:
     builder = ReplyKeyboardBuilder()
 
     builder.row(
-        KeyboardButton(text=btns_lexicon['main_menu']['schedule'])
+        KeyboardButton(text=btns_lexicon['main_menu']['schedule']),
+        KeyboardButton(text=btns_lexicon['main_menu']['week_schedule'])
+    )
+    builder.row(
+        KeyboardButton(text=btns_lexicon['main_menu']['export_calendar']),
+        KeyboardButton(text=btns_lexicon['main_menu']['export_week'])
     )
     builder.row(
         KeyboardButton(text=btns_lexicon['main_menu']['puffins'])
@@ -19,8 +24,7 @@ def get_main_menu_kb() -> ReplyKeyboardMarkup:
         KeyboardButton(
             text=btns_lexicon['main_menu']['settings'],
             web_app=WebAppInfo(
-                url="https://ya.ru"
-                # url=f"{getenv('WEBAPP_URL')}/settings?uid={tid}&token={settings_token}"
+                url=f"{getenv('WEBAPP_URL', 'https://simonoffcc.github.io/polytech-bot-featured')}"
             )
         )
     )

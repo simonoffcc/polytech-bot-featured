@@ -11,14 +11,14 @@ from tg_bot.lexicon.messages import lexicon as msgs_lexicon
 from tg_bot.lexicon.buttons import lexicon as btns_lexicon
 from utils.groups_jsoner import find_group_by_id
 from utils.schedule_formatter import ScheduleFormatter
-from utils.schedule_processor import get_schedule_by_date
+from utils.schedule_processor import get_schedule_by_date, fetch_week_schedule
 from tg_bot.keyboards.main_menu import get_main_menu_kb
 
 router = Router()
 
 @router.message(Command("schedule"))
 @router.message(F.text == btns_lexicon['main_menu']['schedule'])
-async def cmd_new_work(message: Message):
+async def cmd_schedule(message: Message):
     user = get_user_by_attrs(telegram_id=message.from_user.id)
 
     if not user or not user.is_active:
@@ -41,5 +41,33 @@ async def cmd_new_work(message: Message):
 
     await message.answer(
         text=formatted_day_schedule,
+        reply_markup=get_main_menu_kb()
+    )
+
+@router.message(Command("week"))
+@router.message(F.text == btns_lexicon['main_menu']['week_schedule'])
+async def cmd_week_schedule(message: Message):
+    user = get_user_by_attrs(telegram_id=message.from_user.id)
+
+    if not user or not user.is_active:
+        await message.answer(
+            text=msgs_lexicon['service']['command_not_allowed']
+        )
+        return
+
+    week_schedule_response = fetch_week_schedule(
+        volume='group',
+        volume_data={
+            'faculty': user.faculty,
+            'group': user.group,
+        },
+        request_date=datetime.now().date()
+    )
+
+    title = f"Группа {find_group_by_id(faculty=user.faculty, group_num=user.group)['name']}"
+    formatted_week_schedule = ScheduleFormatter.format_week_schedule(week_schedule_response, title)
+
+    await message.answer(
+        text=formatted_week_schedule,
         reply_markup=get_main_menu_kb()
     )
