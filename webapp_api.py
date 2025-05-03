@@ -1,25 +1,20 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from datetime import date
-import os
 
 from db_orm.crud import get_puffins_history, get_puffins_status
 
 app = FastAPI()
 
-# Настраиваем CORS для GitHub Pages и локальной разработки
-ALLOWED_ORIGINS = [
-    "https://simonoffcc.github.io",  # GitHub Pages домен
-    "http://localhost:8000",
-    "http://localhost:3000",
-]
-
-if os.getenv("PRODUCTION_DOMAIN"):
-    ALLOWED_ORIGINS.append(os.getenv("PRODUCTION_DOMAIN"))
-
+# Настраиваем CORS для GitHub Pages
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=ALLOWED_ORIGINS,
+    allow_origins=[
+        "https://simonoffcc.github.io",  # Ваш GitHub Pages домен
+        "http://localhost:8000",
+        "http://localhost:3000",
+        "http://127.0.0.1:8000",
+    ],
     allow_credentials=True,
     allow_methods=["GET"],
     allow_headers=["*"],
