@@ -28,7 +28,7 @@ services:
       MYSQL_USER: ${DB_USER}                   # Имя пользователя
       MYSQL_PASSWORD: ${DB_PASSWORD}           # Пароль пользователя
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "${DB_USER}", "-p${DB_PASSWORD}"]
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${DB_ROOT_PASSWORD}"]
       interval: 10s
       timeout: 5s
       retries: 5
