@@ -67,18 +67,18 @@ class WeekScheduleElement(BaseModel):
 
 
 months_captions = {
-    'янв.': 1,
-    'фев.': 2,
-    'мар.': 3,
-    'апр.': 4,
+    'янв': 1, 'января': 1,
+    'фев': 2, 'февраля': 2,
+    'мар': 3, 'марта': 3,
+    'апр': 4, 'апреля': 4,
     'мая': 5,
-    'июн.': 6,
-    'июл.': 7,
-    'авг.': 8,
-    'сент.': 9,
-    'окт.': 10,
-    'нояб.': 11,
-    'дек.': 12,
+    'июн': 6, 'июня': 6,
+    'июл': 7, 'июля': 7,
+    'авг': 8, 'августа': 8,
+    'сент': 9, 'сентября': 9,
+    'окт': 10, 'октября': 10,
+    'нояб': 11, 'ноября': 11,
+    'дек': 12, 'декабря': 12,
 }
 
 
@@ -130,9 +130,12 @@ def fetch_week_schedule(volume: str, volume_data: dict, request_date: datetime.d
         for index, day in enumerate(schedule_days):
 
             time = day.find('div', class_='schedule__date')
+            
+            month_name = time.text.split(' ')[1].strip('.,')
+
             day_date_formatted = datetime.date(
                 year=request_date.year,
-                month=int(months_captions[time.text.split(' ')[1][:-1]]),
+                month=int(months_captions[month_name]),
                 day=int(time.text.split(' ')[0]),
             )
 

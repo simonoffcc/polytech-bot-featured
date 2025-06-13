@@ -1,7 +1,7 @@
 import asyncio
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 
-from config import bot, dp
+from .config import bot, dp
 from utils.env_to_dist import move_env_vars
 from utils.mock_data_updaters import update_groups_data, update_teachers_data, create_mock_folder_and_data
 

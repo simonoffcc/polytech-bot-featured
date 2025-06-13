@@ -9,7 +9,7 @@ lexicon = {
         'today_schedule': f"{emojize(':calendar:')} Расписание на сегодня",
         'week_schedule': f"{emojize(':calendar:')} Расписание на неделю",
         'export_today': f"{emojize(':inbox_tray:')} Экспорт на сегодня",
-        'export_week': f"{emojize(':inbox_tray:')} Экспорт на неделю",
+        'export_week': f"{emojize(':inbox_tray:')} Экспорт на недели",
         'puffins': f"{emojize(':doughnut:')} Есть ли пышки?",
         'about': f"{emojize(':information:')} О боте",
         'find_teacher': f"{emojize(':teacher:')} Где препод?",
