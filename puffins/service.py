@@ -2,6 +2,7 @@ import asyncio
 from aiogram import Router, F
 from aiogram.types import Message
 
+from db_orm.database import Session
 from db_orm.crud import update_puffins_status
 from db_orm.models import PuffinsHistory
 from utils.notification import notification
@@ -25,10 +26,12 @@ async def channel_post_handler(channel_post: Message):
             is_puffins = False
             
         # Обновляем запись в базе данных
-        new_record = update_puffins_status(
-            message=channel_post.text,
-            is_puffins=is_puffins
-        )
+        with Session() as session:
+            new_record = update_puffins_status(
+                session,
+                message=channel_post.text,
+                is_puffins=is_puffins
+            )
         
         # Отправляем уведомление всем подключенным клиентам webapp
         await manager.broadcast('{"status": "updated"}')

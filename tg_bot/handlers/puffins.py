@@ -4,6 +4,7 @@ from aiogram.types import Message
 from datetime import date
 
 from db_orm.crud import get_user_by_attrs, get_puffins_status
+from db_orm.database import Session
 from tg_bot.keyboards.main_menu import get_main_menu_kb
 
 from tg_bot.lexicon.messages import lexicon as msgs_lexicon
@@ -15,24 +16,25 @@ router = Router()
 @router.message(Command("puffins"))
 @router.message(F.text == btns_lexicon['main_menu']['puffins'])
 async def cmd_puffins(message: Message):
-    user = get_user_by_attrs(telegram_id=message.from_user.id)
+    with Session() as session:
+        user = get_user_by_attrs(session, telegram_id=message.from_user.id)
 
-    if not user or not user.is_active:
-        await message.answer(
-            text=msgs_lexicon['service']['command_not_allowed'],
-        )
-        return
+        if not user or not user.is_active:
+            await message.answer(
+                text=msgs_lexicon['service']['command_not_allowed'],
+            )
+            return
 
-    status = get_puffins_status()
+        status = get_puffins_status(session)
     
-    if status is None:
-        await message.answer(
-            text=msgs_lexicon['puffins']['no_information'],
-            reply_markup=get_main_menu_kb()
-        )
-    else:
-        await message.answer(
-            text=status.message,
-            reply_markup=get_main_menu_kb()
-        )
+        if status is None:
+            await message.answer(
+                text=msgs_lexicon['puffins']['no_information'],
+                reply_markup=get_main_menu_kb()
+            )
+        else:
+            await message.answer(
+                text=status.message,
+                reply_markup=get_main_menu_kb()
+            )
     

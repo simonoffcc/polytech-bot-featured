@@ -6,6 +6,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
 
 from db_orm.crud import get_user_by_attrs
+from db_orm.database import Session
 
 from tg_bot.lexicon.messages import lexicon as msgs_lexicon
 from tg_bot.lexicon.buttons import lexicon as btns_lexicon
@@ -19,25 +20,26 @@ router = Router()
 @router.message(Command("today_schedule"))
 @router.message(F.text == btns_lexicon['main_menu']['today_schedule'])
 async def cmd_schedule(message: Message):
-    user = get_user_by_attrs(telegram_id=message.from_user.id)
+    with Session() as session:
+        user = get_user_by_attrs(session, telegram_id=message.from_user.id)
 
-    if not user or not user.is_active:
-        await message.answer(
-            text=msgs_lexicon['service']['command_not_allowed']
+        if not user or not user.is_active:
+            await message.answer(
+                text=msgs_lexicon['service']['command_not_allowed']
+            )
+            return
+
+        day_schedule_response = get_schedule_by_date(
+            volume='group',
+            volume_data={
+                'faculty': user.faculty,
+                'group': user.group,
+            },
+            request_date=datetime.now().date()
         )
-        return
 
-    day_schedule_response = get_schedule_by_date(
-        volume='group',
-        volume_data={
-            'faculty': user.faculty,
-            'group': user.group,
-        },
-        request_date=datetime.now().date()
-    )
-
-    title = f"Группа {find_group_by_id(faculty=user.faculty, group_num=user.group)['name']}"
-    formatted_day_schedule = ScheduleFormatter.format_day_schedule(day_schedule_response, title)
+        title = f"Группа {find_group_by_id(faculty=user.faculty, group_num=user.group)['name']}"
+        formatted_day_schedule = ScheduleFormatter.format_day_schedule(day_schedule_response, title)
 
     await message.answer(
         text=formatted_day_schedule,
@@ -47,25 +49,26 @@ async def cmd_schedule(message: Message):
 @router.message(Command("week_schedule"))
 @router.message(F.text == btns_lexicon['main_menu']['week_schedule'])
 async def cmd_week_schedule(message: Message):
-    user = get_user_by_attrs(telegram_id=message.from_user.id)
+    with Session() as session:
+        user = get_user_by_attrs(session, telegram_id=message.from_user.id)
 
-    if not user or not user.is_active:
-        await message.answer(
-            text=msgs_lexicon['service']['command_not_allowed']
+        if not user or not user.is_active:
+            await message.answer(
+                text=msgs_lexicon['service']['command_not_allowed']
+            )
+            return
+
+        week_schedule_response = fetch_week_schedule(
+            volume='group',
+            volume_data={
+                'faculty': user.faculty,
+                'group': user.group,
+            },
+            request_date=datetime.now().date()
         )
-        return
 
-    week_schedule_response = fetch_week_schedule(
-        volume='group',
-        volume_data={
-            'faculty': user.faculty,
-            'group': user.group,
-        },
-        request_date=datetime.now().date()
-    )
-
-    title = f"Группа {find_group_by_id(faculty=user.faculty, group_num=user.group)['name']}"
-    formatted_week_schedule = ScheduleFormatter.format_week_schedule(week_schedule_response, title)
+        title = f"Группа {find_group_by_id(faculty=user.faculty, group_num=user.group)['name']}"
+        formatted_week_schedule = ScheduleFormatter.format_week_schedule(week_schedule_response, title)
 
     await message.answer(
         text=formatted_week_schedule,

@@ -82,6 +82,18 @@ months_captions = {
 }
 
 
+def parse_schedule_date(date_string: str, reference_year: int) -> datetime.date:
+    """
+    Парсит строку с датой из расписания.
+    Пример строки: "13 июня,"
+    """
+    day_str, month_str = date_string.split(' ')[:2]
+    day = int(day_str)
+    month_name = month_str.strip('.,')
+    month = months_captions[month_name]
+    return datetime.date(year=reference_year, month=month, day=day)
+
+
 def get_week_dates_list(request_date: datetime.date) -> dict:
     """
     Возвращает список дат недели по заданному дню
@@ -131,13 +143,7 @@ def fetch_week_schedule(volume: str, volume_data: dict, request_date: datetime.d
 
             time = day.find('div', class_='schedule__date')
             
-            month_name = time.text.split(' ')[1].strip('.,')
-
-            day_date_formatted = datetime.date(
-                year=request_date.year,
-                month=int(months_captions[month_name]),
-                day=int(time.text.split(' ')[0]),
-            )
+            day_date_formatted = parse_schedule_date(time.text, request_date.year)
 
             # print(day_date_formatted, week_days)
             if day_date_formatted in week_days.keys():

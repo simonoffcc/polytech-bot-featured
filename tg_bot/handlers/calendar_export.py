@@ -15,6 +15,7 @@ from utils.schedule_formatter import ScheduleFormatter
 from utils.calendar_links import create_calendar_links_message
 from utils.ics_generator import create_ics_calendar, cleanup_ics_file
 from db_orm.crud import get_user_by_attrs
+from db_orm.database import Session
 from utils.groups_jsoner import find_group_by_id
 from tg_bot.lexicon.buttons import lexicon as btns_lexicon
 
@@ -35,8 +36,8 @@ email_sender = EmailSender(
 @router.message(Command("export_today"))
 @router.message(F.text == btns_lexicon['main_menu']['export_today'])
 async def cmd_export_today(message: Message, state: FSMContext):
-    # Получаем информацию о пользователе
-    user = get_user_by_attrs(telegram_id=message.from_user.id)
+    with Session() as session:
+        user = get_user_by_attrs(session, telegram_id=message.from_user.id)
     if not user or not user.is_active:
         await message.answer(
             text="У вас нет доступа к этой команде."
@@ -93,8 +94,8 @@ async def cmd_export_today(message: Message, state: FSMContext):
 @router.message(Command("export_week"))
 @router.message(F.text == btns_lexicon['main_menu']['export_week'])
 async def cmd_export_week_calendar(message: Message, state: FSMContext):
-    # Получаем информацию о пользователе
-    user = get_user_by_attrs(telegram_id=message.from_user.id)
+    with Session() as session:
+        user = get_user_by_attrs(session, telegram_id=message.from_user.id)
     if not user or not user.is_active:
         await message.answer(
             text="У вас нет доступа к этой команде."
@@ -179,8 +180,8 @@ async def process_email(message: Message, state: FSMContext):
         )
         return
 
-    # Получаем информацию о пользователе
-    user = get_user_by_attrs(telegram_id=message.from_user.id)
+    with Session() as session:
+        user = get_user_by_attrs(session, telegram_id=message.from_user.id)
     if not user or not user.is_active:
         await message.answer(
             text="У вас нет доступа к этой команде."
