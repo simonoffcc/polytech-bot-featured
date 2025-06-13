@@ -17,12 +17,23 @@
 Это основной и рекомендуемый способ для развертывания проекта на сервере.
 
 ### 1. Подготовка
-- Установите [Docker](https://docs.docker.com/engine/install/) и [Docker Compose](https://docs.docker.com/compose/install/) на ваш сервер.
-- Склонируйте репозиторий: `git clone https://github.com/simonoffcc/polytech-bot-featured.git`
-- Перейдите в папку проекта: `cd polytech-bot-featured`
+- Установите [Docker](https://docs.docker.com/engine/install/) и [Docker Compose](https://docs.docker.com/compose/install/) на ваш сервер. После установки Docker рекомендуется перезагрузить сервер.
+
+- Склонируйте репозиторий: 
+
+```bash
+git clone https://github.com/simonoffcc/polytech-bot-featured.git
+```
+
+- Перейдите в папку проекта:
+```bash
+cd polytech-bot-featured
+```
 
 ### 2. Настройка окружения
-Создайте файл `.env` в корневой папке проекта и заполните его по примеру. **Важно:** `DB_HOST` должен остаться `db`, так как это имя сервиса в Docker Compose.
+Создайте файл `.env` в корневой папке проекта и заполните его по примеру. 
+
+**Важно:** `DB_HOST` должен остаться `db`, так как это имя сервиса в Docker Compose.
 
 ```env
 # Токен вашего Telegram-бота от @BotFather
@@ -55,7 +66,10 @@ WEBAPP_URL=https://your-domain.com
 ```bash
 docker-compose up --build -d
 ```
-Для просмотра логов используйте `docker-compose logs -f bot`.
+Для просмотра логов используйте 
+```bash
+docker-compose logs -f bot
+```
 
 ## Тестирование
 

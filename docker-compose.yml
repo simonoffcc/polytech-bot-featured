@@ -11,7 +11,8 @@ services:
       # Переопределяем хост БД, чтобы он указывал на сервис db
       DB_HOST: db
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     networks:
       - bot-network
 
@@ -26,6 +27,11 @@ services:
       MYSQL_DATABASE: ${DB_NAME}               # Имя БД для создания
       MYSQL_USER: ${DB_USER}                   # Имя пользователя
       MYSQL_PASSWORD: ${DB_PASSWORD}           # Пароль пользователя
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "${DB_USER}", "-p${DB_PASSWORD}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     volumes:
       - mysql_data:/var/lib/mysql
     networks:
