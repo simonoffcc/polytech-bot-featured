@@ -18,7 +18,7 @@
 
 ### 1. Подготовка
 - Установите [Docker](https://docs.docker.com/engine/install/) и [Docker Compose](https://docs.docker.com/compose/install/) на ваш сервер.
-- Склонируйте репозиторий: `git clone <URL вашего репозитория>`
+- Склонируйте репозиторий: `git clone https://github.com/simonoffcc/polytech-bot-featured.git`
 - Перейдите в папку проекта: `cd polytech-bot-featured`
 
 ### 2. Настройка окружения
