@@ -14,6 +14,6 @@ lexicon = {
         'about': f"{emojize(':information:')} О боте",
         'find_teacher': f"{emojize(':teacher:')} Где препод?",
         'buildings': f"{emojize(':school:')} Корпуса",
-        'webapp': f"📲 Вебапп",
+        'webapp': f"{emojize(':mobile_phone_with_arrow:')} Вебапп",
     }
 }

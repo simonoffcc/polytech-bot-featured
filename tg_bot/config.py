@@ -6,11 +6,15 @@ from aiogram.client.default import DefaultBotProperties
 
 from .handlers import (start, menu, about, schedule, calendar_export, puffins, unknown_msg)
 from puffins import service as puffins_service
+from webapp.main import app as fastapi_app
 
 load_dotenv()
 
 bot = Bot(token=getenv('BOT_API_KEY'), default=DefaultBotProperties(parse_mode='html'))
 dp = Dispatcher()
+
+# Присоединяем роутеры FastAPI к боту
+dp['fastapi_app'] = fastapi_app
 
 # SMTP_HOST = "smtp.mail.ru"
 # SMTP_PORT = 587

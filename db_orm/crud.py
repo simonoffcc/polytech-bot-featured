@@ -1,5 +1,5 @@
 from contextlib import contextmanager
-from datetime import date
+from datetime import date, datetime, timedelta
 from sqlalchemy import desc
 
 from db_orm.models import User, PuffinsHistory
@@ -112,6 +112,12 @@ def get_puffins_history(days: int = 14) -> list[PuffinsHistory]:
     """
     with get_session() as session:
         return session.query(PuffinsHistory).order_by(desc(PuffinsHistory.date)).limit(days).all()
+
+
+def get_puffins_history_last_two_weeks(session):
+    two_weeks_ago = datetime.now() - timedelta(days=14)
+    return session.query(PuffinsHistory).filter(PuffinsHistory.date >= two_weeks_ago.date()).order_by(PuffinsHistory.date.asc()).all()
+
 
 def update_puffins_status(message: str, is_puffins: bool | None, target_date: date = date.today()) -> PuffinsHistory:
     """

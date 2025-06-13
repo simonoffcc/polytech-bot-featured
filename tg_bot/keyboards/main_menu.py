@@ -1,4 +1,5 @@
 from os import getenv
+from dotenv import load_dotenv
 
 from aiogram.types import ReplyKeyboardMarkup, KeyboardButton, WebAppInfo
 from aiogram.utils.keyboard import ReplyKeyboardBuilder
@@ -20,14 +21,15 @@ def get_main_menu_kb() -> ReplyKeyboardMarkup:
     builder.row(
         KeyboardButton(text=btns_lexicon['main_menu']['puffins'])
     )
-    # builder.row(
-    #     KeyboardButton(
-    #         text=btns_lexicon['main_menu']['webapp'],
-    #         web_app=WebAppInfo(
-    #             url=f"{getenv('WEBAPP_URL')}"
-    #         )
-    #     )
-    # )
+    load_dotenv()
+    builder.row(
+        KeyboardButton(
+            text=btns_lexicon['main_menu']['webapp'],
+            web_app=WebAppInfo(
+                url=f"{getenv('WEBAPP_URL')}"
+            )
+        )
+    )
     builder.row(
         KeyboardButton(text=btns_lexicon['main_menu']['about'])
     )
