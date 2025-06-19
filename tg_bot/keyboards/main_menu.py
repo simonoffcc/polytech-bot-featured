@@ -1,30 +1,37 @@
 from os import getenv
+from dotenv import load_dotenv
 
 from aiogram.types import ReplyKeyboardMarkup, KeyboardButton, WebAppInfo
 from aiogram.utils.keyboard import ReplyKeyboardBuilder
 
 from tg_bot.lexicon.buttons import lexicon as btns_lexicon
-from tg_bot.lexicon.messages import lexicon as msgs_lexicon
 
 
 def get_main_menu_kb() -> ReplyKeyboardMarkup:
     builder = ReplyKeyboardBuilder()
 
     builder.row(
-        KeyboardButton(text=btns_lexicon['main_menu']['schedule'])
+        KeyboardButton(text=btns_lexicon['main_menu']['today_schedule']),
+        KeyboardButton(text=btns_lexicon['main_menu']['week_schedule'])
     )
     builder.row(
-        KeyboardButton(text=btns_lexicon['main_menu']['buildings']),
-        KeyboardButton(text=btns_lexicon['main_menu']['find_teacher'])
+        KeyboardButton(text=btns_lexicon['main_menu']['export_today']),
+        KeyboardButton(text=btns_lexicon['main_menu']['export_week'])
     )
+    builder.row(
+        KeyboardButton(text=btns_lexicon['main_menu']['puffins'])
+    )
+    load_dotenv()
     builder.row(
         KeyboardButton(
-            text=btns_lexicon['main_menu']['settings'],
+            text=btns_lexicon['main_menu']['webapp'],
             web_app=WebAppInfo(
-                url="https://ya.ru"
-                # url=f"{getenv('WEBAPP_URL')}/settings?uid={tid}&token={settings_token}"
+                url=f"{getenv('WEBAPP_URL')}"
             )
         )
+    )
+    builder.row(
+        KeyboardButton(text=btns_lexicon['main_menu']['about'])
     )
 
     return builder.as_markup(resize_keyboard=True)

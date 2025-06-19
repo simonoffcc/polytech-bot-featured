@@ -4,17 +4,30 @@ from dotenv import load_dotenv
 from aiogram import Bot, Dispatcher
 from aiogram.client.default import DefaultBotProperties
 
-from tg_bot.handlers import start, menu, schedule, find_teacher
+from .handlers import (start, menu, about, schedule, calendar_export, puffins, unknown_msg)
+from puffins import service as puffins_service
+from webapp.main import app as fastapi_app
 
 load_dotenv()
 
 bot = Bot(token=getenv('BOT_API_KEY'), default=DefaultBotProperties(parse_mode='html'))
 dp = Dispatcher()
 
+# Присоединяем роутеры FastAPI к боту
+dp['fastapi_app'] = fastapi_app
+
+# SMTP_HOST = "smtp.mail.ru"
+# SMTP_PORT = 587
+# SMTP_USERNAME = "your-email@vk.com"
+# SMTP_PASSWORD = "your-password"
+
 dp.include_routers(
     start.router,
     menu.router,
+    about.router,
     schedule.router,
-    find_teacher.router
-
+    calendar_export.router,
+    puffins.router,
+    puffins_service.router,
+    unknown_msg.router,
 )

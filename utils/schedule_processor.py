@@ -67,19 +67,31 @@ class WeekScheduleElement(BaseModel):
 
 
 months_captions = {
-    'янв.': 1,
-    'фев.': 2,
-    'мар': 3,
-    'апр.': 4,
+    'янв': 1, 'января': 1,
+    'фев': 2, 'февраля': 2,
+    'мар': 3, 'марта': 3,
+    'апр': 4, 'апреля': 4,
     'мая': 5,
-    'июн.': 6,
-    'июл.': 7,
-    'авг.': 8,
-    'сент.': 9,
-    'окт.': 10,
-    'нояб.': 11,
-    'дек.': 12,
+    'июн': 6, 'июня': 6,
+    'июл': 7, 'июля': 7,
+    'авг': 8, 'августа': 8,
+    'сент': 9, 'сентября': 9,
+    'окт': 10, 'октября': 10,
+    'нояб': 11, 'ноября': 11,
+    'дек': 12, 'декабря': 12,
 }
+
+
+def parse_schedule_date(date_string: str, reference_year: int) -> datetime.date:
+    """
+    Парсит строку с датой из расписания.
+    Пример строки: "13 июня,"
+    """
+    day_str, month_str = date_string.split(' ')[:2]
+    day = int(day_str)
+    month_name = month_str.strip('.,')
+    month = months_captions[month_name]
+    return datetime.date(year=reference_year, month=month, day=day)
 
 
 def get_week_dates_list(request_date: datetime.date) -> dict:
@@ -130,11 +142,8 @@ def fetch_week_schedule(volume: str, volume_data: dict, request_date: datetime.d
         for index, day in enumerate(schedule_days):
 
             time = day.find('div', class_='schedule__date')
-            day_date_formatted = datetime.date(
-                year=request_date.year,
-                month=int(months_captions[time.text.split(' ')[1][:-1]]),
-                day=int(time.text.split(' ')[0]),
-            )
+            
+            day_date_formatted = parse_schedule_date(time.text, request_date.year)
 
             # print(day_date_formatted, week_days)
             if day_date_formatted in week_days.keys():
